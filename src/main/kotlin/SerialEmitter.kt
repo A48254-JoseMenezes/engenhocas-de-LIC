@@ -1,3 +1,4 @@
+// Envia tramas para os diferentes módulos Serial Receiver
 object SerialEmitter {
 
     const val SSMASK = 0x80
@@ -6,7 +7,6 @@ object SerialEmitter {
     const val BUSYMASK = 0x80
     private var isPair = true
 
-    // Envia tramas para os diferentes módulos Serial Receiver.
     enum class Destination(val x : Int) { LCD(0), TICKET_DISPENSER(1) }
 
     // Inicia a classe
@@ -14,6 +14,7 @@ object SerialEmitter {
         HAL.init()
         HAL.writeBits(SSMASK+SCLKMASK+SDXMASK, 0x80)
     }
+
     // Envia uma trama para o SerialReceiver identificado o destino em addr e os bits de dados em ‘data’.
     fun send(addr: Destination, data: Int) {
         while ( isBusy() ) { }
@@ -22,7 +23,7 @@ object SerialEmitter {
         if(addr.x == 1) isPair = !isPair
         sclkCycle()
         for (i in 0..8) {
-            val SDX = (data.shr(i) % 2 )
+            val SDX = (data.shr(i) % 2)
             HAL.writeBits(SDXMASK,  SDX * SDXMASK )
             if (SDX == 1) isPair = !isPair
             sclkCycle()

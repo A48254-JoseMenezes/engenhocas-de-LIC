@@ -3,6 +3,7 @@ import isel.leic.UsbPort
 // Virtualiza o acesso ao sistema UsbPort
 object HAL {
     var currentOut = 0
+
     // Inicia a classe
     fun init() {
         writeBits(0xFF, 0)
