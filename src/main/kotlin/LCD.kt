@@ -78,8 +78,6 @@ object LCD {
 
 fun main(){
     LCD.init()
-    LCD.write("Bom trabalho ")
-    LCD.clear()
-    LCD.cursor(0, 4)
-    LCD.write('a')
+    LCD.write("ola ")
+
 }
