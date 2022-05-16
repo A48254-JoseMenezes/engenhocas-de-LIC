@@ -17,6 +17,8 @@ object TUI {
             LCD.write(highSubstring)
 
         }
+        else{
+            LCD.write(text)}
     }
 }
 
