@@ -4,6 +4,14 @@ object LCD {
     private const val LINES = 2
     private const val COLS = 16
 
+    private const val CMD_CLEAR = 0x01
+    private const val CMD_CURSOR_SHIFT = 0x10
+    private const val CMD_INIT_SET = 0x30
+    private const val CMD_INIT_SET_LINES = 0x38
+    private const val CMD_INIT_DISPLAY_OFF = 0x08
+    private const val CMD_INIT_ENTRY = 0x06
+    private const val CMD_INIT_DISPLAY_ON = 0x0F
+
     // Escreve um byte de comando/dados no LCD em série
     private fun writeByteSerial(rs: Boolean, data: Int) =
         SerialEmitter.send(SerialEmitter.Destination.LCD, data.shl(1) + (if (rs) 1 else 0))
@@ -26,22 +34,22 @@ object LCD {
 
         Thread.sleep(20)
 
-        writeCMD(1.shl(5) + 1.shl(4))
+        writeCMD(CMD_INIT_SET)
 
         Thread.sleep(6)
 
-        writeCMD(1.shl(5) + 1.shl(4))
+        writeCMD(CMD_INIT_SET)
 
         Thread.sleep(1)
 
-        writeCMD(1.shl(5) + 1.shl(4))
+        writeCMD(CMD_INIT_SET)
 
-        writeCMD(1.shl(5) + 1.shl(4) + 1.shl(3))
-        writeCMD(1.shl(3))
-        writeCMD(1)
-        writeCMD(1.shl(2) + 1.shl(1))
+        writeCMD(CMD_INIT_SET_LINES)
+        writeCMD(CMD_INIT_DISPLAY_OFF)
+        writeCMD(CMD_CLEAR)
+        writeCMD(CMD_INIT_ENTRY)
 
-        writeCMD(1.shl(3) + 1.shl(2) + 1.shl(1) + 1)
+        writeCMD(CMD_INIT_DISPLAY_ON)
     }
     // Escreve um caráter na posição corrente.
     fun write(c: Char) {
@@ -56,7 +64,7 @@ object LCD {
     // Envia comando para posicionar cursor (‘line’:0..LINES-1 , ‘column’:0..COLS-1)
     fun cursor(line: Int, column: Int) {
         writeCMD(
-            1.shl(7)
+            CMD_CURSOR_SHIFT
             + line.shl(6)
             + column
         )
@@ -64,7 +72,7 @@ object LCD {
 
     // Envia comando para limpar o ecrã e posicionar o cursor em (0,0)
     fun clear() {
-        writeCMD(1)
+        writeCMD(CMD_CLEAR)
     }
 }
 
