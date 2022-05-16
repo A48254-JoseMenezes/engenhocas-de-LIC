@@ -9,7 +9,6 @@ object TUI {
             Location.RIGHT -> LCD.cursor(line, (location.offset - text.length))
             Location.CENTER -> LCD.cursor(line, ( location.offset - (text.length / 2) ))
         }
-        //LCD.cursor(line, location.offset)
         LCD.write(text)
 
     }
