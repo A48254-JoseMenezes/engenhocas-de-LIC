@@ -6,7 +6,7 @@ object LCD {
 
     // Escreve um byte de comando/dados no LCD em série
     private fun writeByteSerial(rs: Boolean, data: Int) =
-        SerialEmitter.send(SerialEmitter.Destination.LCD, (if (rs) 1 else 0).shl(8) + data)
+        SerialEmitter.send(SerialEmitter.Destination.LCD, data.shl(1) + (if (rs) 1 else 0))
 
     // Escreve um byte de comando/dados no LCD
     private fun writeByte(rs: Boolean, data: Int) =
@@ -24,15 +24,15 @@ object LCD {
     fun init() {
         SerialEmitter.init()
 
-        Thread.sleep(15, 5000)
+        Thread.sleep(20)
 
         writeCMD(1.shl(5) + 1.shl(4))
 
-        Thread.sleep(4, 5000)
+        Thread.sleep(6)
 
         writeCMD(1.shl(5) + 1.shl(4))
 
-        Thread.sleep(0, 500000)
+        Thread.sleep(1)
 
         writeCMD(1.shl(5) + 1.shl(4))
 
@@ -40,6 +40,8 @@ object LCD {
         writeCMD(1.shl(3))
         writeCMD(1)
         writeCMD(1.shl(2) + 1.shl(1))
+
+        writeCMD(1.shl(3) + 1.shl(2) + 1.shl(1) + 1)
     }
     // Escreve um caráter na posição corrente.
     fun write(c: Char) {
@@ -68,5 +70,8 @@ object LCD {
 
 fun main(){
     LCD.init()
-    LCD.write("U")
+    LCD.write("Bom trabalho ")
+    LCD.clear()
+    LCD.cursor(0, 4)
+    LCD.write('a')
 }
