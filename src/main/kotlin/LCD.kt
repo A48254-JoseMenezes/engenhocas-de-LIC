@@ -5,7 +5,7 @@ object LCD {
     private const val COLS = 16
 
     private const val CMD_CLEAR = 0x01
-    private const val CMD_CURSOR_SHIFT = 0x10
+    private const val CMD_CURSOR_SHIFT = 0x80
     private const val CMD_INIT_SET = 0x30
     private const val CMD_INIT_SET_LINES = 0x38
     private const val CMD_INIT_DISPLAY_OFF = 0x08
