@@ -1,13 +1,15 @@
 object TUI {
-
-    const val SIZE_LINE_LCD = 15
-
-    enum class Location(val offset: Int) { LEFT(0), CENTER(7), RIGHT(10) }
+    enum class Location(val offset: Int) { LEFT(0), CENTER(7), RIGHT(15) }
 
 
     fun write(text: String, line: Int, location: Location) {
         LCD.clear()
-        LCD.cursor(line, location.offset)
+        when(location) {
+            Location.LEFT -> LCD.cursor(line, location.offset)
+            Location.RIGHT -> LCD.cursor(line, (location.offset - text.length))
+            Location.CENTER -> LCD.cursor(line, ( location.offset - (text.length / 2) ))
+        }
+        //LCD.cursor(line, location.offset)
         LCD.write(text)
 
     }
@@ -15,5 +17,6 @@ object TUI {
 }
 
 fun main(){
+    LCD.init()
     TUI.write("hellloo", 1, TUI.Location.LEFT)
 }
