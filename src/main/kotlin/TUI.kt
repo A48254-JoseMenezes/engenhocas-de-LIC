@@ -15,6 +15,8 @@ object TUI {
         LCD.write(text)
     }
 
+    fun clear() = LCD.clear()
+
 }
 
 fun main(){
