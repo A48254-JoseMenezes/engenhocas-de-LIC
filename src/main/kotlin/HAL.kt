@@ -6,12 +6,12 @@ object HAL {
 
     // Inicia a classe
     fun init() {
-        writeBits(0xFF, 0)
+        writeBits(0xFF, currentOut)
     }
 
     // Retorna true se o bit tiver o valor lógico ‘1’
     fun isBit(mask: Int): Boolean{
-        return UsbPort.read() and mask != 0}
+        return ( UsbPort.read() and mask ) != 0}
 
     // Retorna os valores dos bits representados por mask presentes no UsbPort
     fun readBits(mask: Int) = UsbPort.read() and mask
