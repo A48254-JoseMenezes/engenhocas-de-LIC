@@ -28,3 +28,4 @@ object KeyReceiver { // Recebe trama do Keyboard Reader.
         HAL.clrBits(TXCLK_MASK)
     }
 }
+
