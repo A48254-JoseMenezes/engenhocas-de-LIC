@@ -23,7 +23,6 @@ object KBD { // Ler teclas. Métodos retornam ‘0’..’9’,’#’,’*’ o
         var time: Long = 0L
 
         while(time < timeout){
-            println("estamos a ver o tempo")
             val value = getKey()
             if (value != NONE.toChar()) return value
             time = System.currentTimeMillis() - startTime
