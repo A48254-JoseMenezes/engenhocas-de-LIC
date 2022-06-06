@@ -1,7 +1,7 @@
 object CoinAcceptor { // Implementa a interface com o moedeiro.
 
     const val COIN_MASK = 0x02
-    const val CID_MASK = 0x1C // bit 2, bit 3, bit 4
+    const val CID_MASK = 0x1C // bit 2, bit 3, bit 4 ( 0x10 + 0x08 + 0x40 )
     const val ACCEPT_MASK = 0x08
     const val COLLECT_MASK = 0x04
     const val EJECT_MASK = 0x02
@@ -41,3 +41,4 @@ object CoinAcceptor { // Implementa a interface com o moedeiro.
         HAL.clrBits(COLLECT_MASK)
     }
 }
+
