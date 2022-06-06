@@ -1,4 +1,4 @@
-
+import java.awt.datatransfer.StringSelection
 
 data class Station(val price: Int, val number:Int, val stationName: String)
 
@@ -11,8 +11,8 @@ fun String.parseToStation(): Station {
 
 fun main(){
     //println("1;3;Sta.Apolonia".parseToStation())
-    val file = FileAccess.readFile("BILHETES_VENDIDOS")
-    for (item in file){
+    val stringStations = FileAccess.readFile("BILHETES_VENDIDOS")
+    for (item in stringStations){
         println(item.parseToStation())
     }
 }
