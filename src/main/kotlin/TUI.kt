@@ -1,6 +1,7 @@
 object TUI {
     enum class Location(val offset: Int) { LEFT(0), CENTER(7), RIGHT(16) }
     const val TIMEOUT = 5000L
+    const val NONE = 0;
 
     fun init() {
         LCD.init()
@@ -17,6 +18,14 @@ object TUI {
     }
 
     fun read() = KBD.waitKey(TIMEOUT)
+
+    fun writeFromKeyboard(){
+        val key = read()
+        if (key == NONE.toChar()) print("ERROR: Timeout reached.")
+        else {
+            write(key.toString(), 0, Location.LEFT )
+        }
+    }
 
     fun clear() = LCD.clear()
 
