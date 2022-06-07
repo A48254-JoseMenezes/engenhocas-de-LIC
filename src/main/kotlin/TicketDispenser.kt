@@ -9,6 +9,7 @@ object TicketDispenser {
     fun init() {
         SerialEmitter.init()
     }
+
     // Envia comando para imprimir e dispensar um bilhete
     fun print(destinyId: Int, originId: Int, roundTrip: Boolean) {
         SerialEmitter.send(
@@ -22,6 +23,7 @@ object TicketDispenser {
 
 fun main() {
     TicketDispenser.init()
+
     val startingTime = System.currentTimeMillis()
     TicketDispenser.print(2, 5, true)
     val endingTime = System.currentTimeMillis()
@@ -39,5 +41,4 @@ fun main() {
         }
     }
      */
-
 }

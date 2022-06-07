@@ -1,4 +1,5 @@
-object KeyReceiver { // Recebe trama do Keyboard Reader.
+// Recebe trama do Keyboard Reader
+object KeyReceiver {
 
     const val TXD_MASK = 0x01
     const val TXCLK_MASK = 0x01
@@ -7,14 +8,15 @@ object KeyReceiver { // Recebe trama do Keyboard Reader.
     fun init() {
         HAL.init()
     }
+
     // Recebe uma trama e retorna o código de uma tecla caso exista
     fun rcv(): Int {
         var keyCode = 0
-        if( HAL.isBit(TXD_MASK) ) return -1
+        if ( HAL.isBit(TXD_MASK) ) return -1
         txclkRise()
-        if( !HAL.isBit(TXD_MASK) ) return -1
+        if ( !HAL.isBit(TXD_MASK) ) return -1
         txclkRise()
-        repeat(4){ idx ->
+        repeat(4) { idx ->
             val tdx = HAL.readBits(TXD_MASK)
             keyCode += tdx.shl(idx)
             txclkRise()
@@ -23,9 +25,14 @@ object KeyReceiver { // Recebe trama do Keyboard Reader.
         else return keyCode
     }
 
-    private fun txclkRise(){
+    private fun txclkRise() {
         HAL.setBits(TXCLK_MASK)
         HAL.clrBits(TXCLK_MASK)
     }
 }
 
+fun main() {
+    KeyReceiver.init()
+
+    KeyReceiver.rcv()
+}

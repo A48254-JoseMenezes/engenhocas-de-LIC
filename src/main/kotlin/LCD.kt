@@ -1,5 +1,6 @@
 // Escreve no LCD usando a interface a 8 bits
 object LCD {
+
     // Dimensão do display
     private const val LINES = 2
     private const val COLS = 16
@@ -28,7 +29,7 @@ object LCD {
     private fun writeDATA(data: Int) =
         writeByte(true, data)
 
-    // Envia a sequência de iniciação para comunicação a 8 bits.
+    // Envia a sequência de iniciação para comunicação a 8 bits
     fun init() {
         SerialEmitter.init()
 
@@ -51,16 +52,19 @@ object LCD {
 
         writeCMD(CMD_INIT_DISPLAY_ON)
     }
-    // Escreve um caráter na posição corrente.
+
+    // Escreve um caráter na posição corrente
     fun write(c: Char) {
         writeDATA(c.code)
     }
-    // Escreve uma string na posição corrente.
+
+    // Escreve uma string na posição corrente
     fun write(text: String) {
         for (i in text.indices){
             write(text[i])
         }
     }
+
     // Envia comando para posicionar cursor (‘line’:0..LINES-1 , ‘column’:0..COLS-1)
     fun cursor(line: Int, column: Int) {
         writeCMD(
@@ -78,6 +82,6 @@ object LCD {
 
 fun main(){
     LCD.init()
-    LCD.write("ola ")
 
+    LCD.write("teste")
 }

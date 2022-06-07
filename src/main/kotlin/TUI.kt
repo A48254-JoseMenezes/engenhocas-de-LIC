@@ -1,5 +1,7 @@
 object TUI {
+
     enum class Location(val offset: Int) { LEFT(0), CENTER(7), RIGHT(16) }
+
     const val TIMEOUT = 5000L
     const val NONE = 0
 
@@ -7,6 +9,8 @@ object TUI {
         LCD.init()
         LCD.clear()
     }
+
+    fun clear() = LCD.clear()
 
     fun write(text: String, line: Int, location: Location) {
         when (location) {
@@ -19,36 +23,36 @@ object TUI {
 
     fun read() = KBD.waitKey(TIMEOUT)
 
-    fun readInteger(){
+    fun readInteger() {
         val key = read()
-        when(key) {
+        when (key) {
             '*' -> write("",0, Location.CENTER)
             '#' -> LCD.clear()
             else -> write(key.toString(), 0, Location.LEFT)
         }
     }
 
-    fun writeFromKeyboard(){
+    fun writeFromKeyboard() {
         val key = read()
         if (key == NONE.toChar()) print("ERROR: Timeout reached.")
         else {
             write(key.toString(), 0, Location.LEFT )
         }
     }
-
-    fun clear() = LCD.clear()
-
 }
 
 fun main(){
     TUI.init()
 
-    /*TUI.write("bilhete 1", 0, TUI.Location.LEFT)
+/*
+    TUI.write("bilhete 1", 0, TUI.Location.LEFT)
     TUI.write("0.50", 0, TUI.Location.RIGHT)
     TUI.write("bilhete 2", 1, TUI.Location.LEFT)
-    TUI.write("1.50", 1, TUI.Location.RIGHT)*/
+    TUI.write("1.50", 1, TUI.Location.RIGHT)
 
-    while(true){
-        TUI.readInteger()
+ */
+
+    while (true) {
+        TUI.writeFromKeyboard()
     }
 }

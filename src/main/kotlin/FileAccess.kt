@@ -9,8 +9,6 @@ object FileAccess {
     }
 }
 
-
-
 fun main() {
     println(FileAccess.readFile("BILHETES_VENDIDOS"))
 }
