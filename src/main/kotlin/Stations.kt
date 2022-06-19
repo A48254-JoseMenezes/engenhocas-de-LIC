@@ -5,6 +5,8 @@ object Stations {
 
     private var stations = mutableListOf<Station>()
 
+    var size = 0
+
     private const val FILE_NAME = "stations.txt"
 
     fun init(){
@@ -13,7 +15,9 @@ object Stations {
             val details = stationsArray[i].split(";")
             stations.add( Station(details[0].toInt(), details[1].toInt(), details[2]) )
         }
+        size = stations.size
     }
+
 
     operator fun get(i : Int) = stations[i]
 
