@@ -11,7 +11,7 @@ object LCD {
     private const val CMD_INIT_SET_LINES = 0x38
     private const val CMD_INIT_DISPLAY_OFF = 0x08
     private const val CMD_INIT_ENTRY = 0x06
-    private const val CMD_INIT_DISPLAY_ON = 0x0F
+    private const val CMD_INIT_DISPLAY_ON = 0x0C
 
     // Escreve um byte de comando/dados no LCD em série
     private fun writeByteSerial(rs: Boolean, data: Int) =

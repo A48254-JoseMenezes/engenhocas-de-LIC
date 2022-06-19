@@ -1,6 +1,6 @@
 object TUI {
 
-    enum class Location(val offset: Int) { LEFT(0), CENTER(7), RIGHT(16) }
+    enum class Location(val offset: Int) { LEFT(0), CENTER(8), RIGHT(16) }
 
     const val TIMEOUT = 5000L
     const val NONE = 0
