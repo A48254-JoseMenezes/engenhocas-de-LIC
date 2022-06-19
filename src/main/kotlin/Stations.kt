@@ -3,7 +3,7 @@ object Stations {
 
     class Station(val price: Int, var ticketsSold: Int, val name: String)
 
-    private var stations = mutableListOf()
+    private var stations = mutableListOf<Station>()
 
     private const val FILE_NAME = "stations.txt"
 
