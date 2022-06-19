@@ -3,9 +3,9 @@ object Stations {
 
     class Station(val price: Int, var ticketsSold: Int, val name: String)
 
-    var stations : MutableList<Station> = mutableListOf()
+    private var stations : MutableList<Station> = mutableListOf()
 
-    const val FILE_NAME = "stations.txt"
+    private const val FILE_NAME = "stations.txt"
 
     fun init(){
         val stationsArray = FileAccess.readFile(FILE_NAME)

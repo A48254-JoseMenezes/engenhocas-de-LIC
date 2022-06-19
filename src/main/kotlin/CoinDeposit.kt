@@ -3,9 +3,9 @@ object CoinDeposit {
 
     class Coin(val value : Int, var amount : Int)
 
-    val bank = mutableListOf<Coin>()
+    private val bank = mutableListOf<Coin>()
 
-    const val FILE_NAME = "CoinDeposit.txt"
+    private const val FILE_NAME = "CoinDeposit.txt"
 
     fun init(){
         val coinArray = FileAccess.readFile(FILE_NAME)
