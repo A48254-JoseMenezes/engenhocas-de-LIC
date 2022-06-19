@@ -1,16 +1,34 @@
-import java.awt.datatransfer.StringSelection
 
-data class Station(val price: Int, val number: Int, val stationName: String)
+object Stations {
 
-fun String.parseToStation(): Station {
-        val listOfDetails = this.split(";")
-        return Station(listOfDetails[0].toInt(), listOfDetails[1].toInt(), listOfDetails[2])
+    class Station(val price: Int, var ticketsSold: Int, val name: String)
+
+    var stations : MutableList<Station> = mutableListOf()
+
+    const val FILE_NAME = "stations.txt"
+
+    fun init(){
+        val stationsArray = FileAccess.readFile(FILE_NAME)
+        for (i in stationsArray.indices) {
+            val details = stationsArray[i].split(";")
+            stations.add( Station(details[0].toInt(), details[1].toInt(), details[2]) )
+        }
+    }
+
+    operator fun get(i : Int) = stations[i]
+
+    fun ticketSold(station : Station) = station.ticketsSold++
+
+    fun update() {
+        val lines = stations.map {"${it.price};${it.ticketsSold};${it.name}"} as MutableList<String>
+        FileAccess.writeFile(FILE_NAME, lines)
+    }
+
 }
 
 fun main(){
-    //println("1;3;Sta.Apolonia".parseToStation())
-    val stringStations = FileAccess.readFile("BILHETES_VENDIDOS")
-    for (item in stringStations){
-        println(item.parseToStation())
-    }
+    Stations.init()
+    val station = Stations[2]
+    Stations.ticketSold(station)
+    Stations.update()
 }

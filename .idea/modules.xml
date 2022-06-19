@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TicketMachine.iml" filepath="$PROJECT_DIR$/TicketMachine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Control.iml" filepath="$PROJECT_DIR$/Control.iml" />
     </modules>
   </component>
 </project>
