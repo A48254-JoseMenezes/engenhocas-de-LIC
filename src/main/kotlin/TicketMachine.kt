@@ -28,18 +28,26 @@ object TicketMachine {
         Thread.sleep(500)
         TUI.write("****", 0, TUI.Location.CENTER)
         Thread.sleep(500)
-        //TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
-        //Thread.sleep(500)
-        //TUI.write("'#' to begin", 1, TUI.Location.CENTER)
-        //Thread.sleep(1500)
+        TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
+        Thread.sleep(500)
+        TUI.write("'#' to begin", 1, TUI.Location.CENTER)
     }
 
-    fun select(): Int? {
+    fun standby() {
         TUI.clear()
         TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
         TUI.write("'#' to begin", 1, TUI.Location.CENTER)
-        val key = TUI.read()
-        if (key == '#')
+        while(true){
+            val key = TUI.read()
+            if (key == '#') {
+                maintenanceMode = false
+                return
+            }
+        }
+    }
+
+    fun select(): Int? {
+
             while (true)
                 when (currentSelectionMode) {
                     SelectionMode.NUMBERS -> {
@@ -173,6 +181,7 @@ fun main(){
     TicketMachine.init()
     TicketMachine.bootUp()
     while(true) {
+        TicketMachine.standby()
         val idx = TicketMachine.select() ?: continue
         TicketMachine.startPurchase(idx)
     }
