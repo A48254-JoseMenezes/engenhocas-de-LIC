@@ -134,10 +134,10 @@ object TicketMachine {
             }
 
             if (CoinAcceptor.hasCoin()) {
-                CoinAcceptor.acceptCoin()
                 val coin = CoinAcceptor.getCoinValue()
                 money.add(coin)
                 acc -= coin
+                CoinAcceptor.acceptCoin()
             }
 
             if (acc <= 0) {
