@@ -1,9 +1,9 @@
 // Controla o estado do mecanismo de dispensa de bilhetes
 object TicketDispenser {
 
-    const val DESTINYID_LASTIDX = 1
-    const val ORIGINID_LASTIDX = 5
-    const val ROUNDTRIP_IDX = 0
+    private const val DESTINYID_LASTIDX = 1
+    private const val ORIGINID_LASTIDX = 5
+    private const val ROUNDTRIP_IDX = 0
 
     // Inicia a classe, estabelecendo os valores iniciais
     fun init() {
