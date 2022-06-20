@@ -102,7 +102,7 @@ object TicketMachine {
         TUI.clear()
         TUI.write(idx.toString(), 1, TUI.Location.LEFT)
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-        TUI.write(Stations[idx].price.toString(), 1, TUI.Location.RIGHT)
+        TUI.write(Stations[idx].price.toEur(), 1, TUI.Location.RIGHT)
     }
 
     fun startPurchase(idx: Int) {
@@ -113,7 +113,7 @@ object TicketMachine {
 
         TUI.clear()
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-        TUI.write(amount.toString(), 1, TUI.Location.CENTER)
+        TUI.write(amount.toEur(), 1, TUI.Location.CENTER)
 
         while (true) {
             val key = TUI.read()
@@ -180,6 +180,11 @@ object TicketMachine {
         return
     }
 }
+
+    private fun Int.toEur() :String {
+        val cent = this%100
+        return if (cent < 10) "${this/100}.0${cent} EUR" else "${this/100}.${cent} EUR"
+    }
 
 fun main(){
     TicketMachine.init()
