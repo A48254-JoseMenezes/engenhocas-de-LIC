@@ -19,7 +19,6 @@ object CoinAcceptor {
     // Retorna o valor facial da moeda introduzida
     fun getCoinValue(): Int {
         val id =  HAL.readBits(CID_MASK).shr(2)     // Garante que o valor está na posição certa.
-        println(id)
         val listCents = listOf(5, 10, 20, 50, 100, 200)
         return listCents[id]
     }
@@ -34,24 +33,21 @@ object CoinAcceptor {
 
     // Devolve as moedas que estão no moedeiro
     fun ejectCoins() {
-        while (hasCoin()) {
-            HAL.setBits(EJECT_MASK)
-        }
+        HAL.setBits(EJECT_MASK)
+        Thread.sleep(2000)
         HAL.clrBits(EJECT_MASK)
     }
 
     // Recolhe as moedas que estão no moedeiro
     fun collectCoins() {
-        while (hasCoin()) {
-            HAL.setBits(COLLECT_MASK)
-        }
+        HAL.setBits(COLLECT_MASK)
+        Thread.sleep(2000)
         HAL.clrBits(COLLECT_MASK)
     }
 }
 
 fun main() {
     CoinAcceptor.init()
-
     while (true) {
         val coin = CoinAcceptor.getCoinValue()
         println(coin)

@@ -7,7 +7,7 @@
 0;0;Moskva
 100;0;Bruxelles
 125;0;Amsterdam
-150;0;Kyiv
+150;1;Kyiv
 175;0;Athina
 200;0;Wien
 225;0;Warszawa
