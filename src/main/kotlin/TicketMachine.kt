@@ -1,14 +1,13 @@
 import java.util.LinkedList
-import java.util.Queue
 
 object TicketMachine {
 
     private const val NONE = 0
+    private const val CHANGE_MODE = -1
 
     enum class SelectionMode {NUMBERS, ARROWS}
 
     var currentSelectionMode = SelectionMode.NUMBERS
-    val changeMode = -1
     var maintenanceMode = false
 
     fun init() {
@@ -54,11 +53,11 @@ object TicketMachine {
                 when (currentSelectionMode) {
                     SelectionMode.NUMBERS -> {
                                                 val idx = selectNumbers() ?: return null
-                                                if (idx == changeMode) continue else return idx
+                                                if (idx == CHANGE_MODE) continue else return idx
                                              }
                     SelectionMode.ARROWS ->  {
                                                 val idx = selectArrows() ?: return null
-                                                if (idx == changeMode) continue else return idx
+                                                if (idx == CHANGE_MODE) continue else return idx
                                              }
                 }
     }
@@ -73,7 +72,7 @@ object TicketMachine {
                 NONE.toChar() -> return null
                 '*'           -> {
                                     currentSelectionMode = SelectionMode.ARROWS
-                                    return changeMode
+                                    return CHANGE_MODE
                                  }
                 '#'           -> return idx
                 else          -> idx = key.digitToInt()
@@ -90,7 +89,7 @@ object TicketMachine {
                 NONE.toChar() -> return null
                 '*'           -> {
                                     currentSelectionMode = SelectionMode.NUMBERS
-                                    return changeMode
+                                    return CHANGE_MODE
                                  }
                 '#'           -> return idx
                 '2'           -> idx = (idx + 1).mod(Stations.size)
@@ -100,7 +99,7 @@ object TicketMachine {
         }
     }
 
-    fun writeStation(idx: Int) {
+    private fun writeStation(idx: Int) {
         TUI.clear()
         TUI.write(idx.toString(), 1, TUI.Location.LEFT)
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
@@ -188,7 +187,13 @@ fun main(){
     TicketMachine.bootUp()
     while(true) {
         TicketMachine.standby()
-        val idx = TicketMachine.select() ?: continue
-        TicketMachine.startPurchase(idx)
+        if (TicketMachine.maintenanceMode) {
+
+        }
+        else {
+            val idx = TicketMachine.select() ?: continue
+            TicketMachine.startPurchase(idx)
+        }
+
     }
 }
