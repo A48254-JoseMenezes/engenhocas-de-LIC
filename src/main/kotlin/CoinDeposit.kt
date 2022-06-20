@@ -15,7 +15,10 @@ object CoinDeposit {
         }
     }
 
-    operator fun get(i : Int) = bank[i]
+    fun reset() {
+        for (i in bank)
+            i.amount = 0
+    }
 
     fun depositCoin(value : Int) = bank.first{ it.value == value }.amount++
 

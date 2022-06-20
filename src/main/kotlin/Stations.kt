@@ -21,6 +21,11 @@ object Stations {
 
     operator fun get(i : Int) = stations[i]
 
+    fun reset() {
+        for (i in stations)
+            i.ticketsSold = 0
+    }
+
     fun ticketSold(station : Station) = station.ticketsSold++
 
     fun update() {
