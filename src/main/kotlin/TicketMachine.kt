@@ -1,6 +1,9 @@
+import java.util.LinkedList
+import java.util.Queue
+
 object TicketMachine {
 
-    const val NONE = 0
+    private const val NONE = 0
 
     enum class SelectionMode {NUMBERS, ARROWS}
 
@@ -47,7 +50,6 @@ object TicketMachine {
     }
 
     fun select(): Int? {
-
             while (true)
                 when (currentSelectionMode) {
                     SelectionMode.NUMBERS -> {
@@ -59,10 +61,9 @@ object TicketMachine {
                                                 if (idx == changeMode) continue else return idx
                                              }
                 }
-        return null
     }
 
-    fun selectNumbers(): Int? {
+    private fun selectNumbers(): Int? {
         var idx = 0
         while (true) {
             if (idx < Stations.size)
@@ -80,7 +81,7 @@ object TicketMachine {
         }
     }
 
-    fun selectArrows(): Int? {
+    private fun selectArrows(): Int? {
         var idx = 0
         while (true) {
             writeStation(idx)
@@ -110,7 +111,7 @@ object TicketMachine {
         var roundTrip = false
         val amount = Stations[idx].price
         var acc = amount
-        var moneyInsert = 0
+        val money = LinkedList<Int>()
 
         TUI.clear()
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
@@ -118,32 +119,36 @@ object TicketMachine {
 
         while (true) {
             val key = TUI.read()
-            //println(key)
-            when {
-                key == '#' -> {
-                                cancelPurchase(moneyInsert)
-                                return
-                              }
-                key == '0' -> {
-                                if (!roundTrip) {
-                                    acc *= 2
-                                    roundTrip = true
-                                } else {
-                                    acc /= 2
-                                    roundTrip = false
-                                }
-                              }
+            when (key) {
+                '#' -> {
+                    cancelPurchase(money)
+                    return
+                }
+                '0' -> {
+                    if (!roundTrip) {
+                        acc *= 2
+                        roundTrip = true
+                    } else {
+                        acc /= 2
+                        roundTrip = false
+                    }
+                }
             }
 
             if (CoinAcceptor.hasCoin()) {
                 CoinAcceptor.acceptCoin()
-                moneyInsert += CoinAcceptor.getCoinValue()
-                acc -= CoinAcceptor.getCoinValue()
-                CoinAcceptor.collectCoins()
+                val coin = CoinAcceptor.getCoinValue()
+                money.add(coin)
+                acc -= coin
             }
 
             if (acc <= 0) {
-                collectTicket(idx, moneyInsert, roundTrip)
+                while(money.isNotEmpty()){
+                    val i = money.poll()
+                    CoinDeposit.depositCoin(i)
+                }
+                CoinAcceptor.collectCoins()
+                collectTicket(idx, roundTrip)
                 return
             } else {
                 TUI.clear()
@@ -153,23 +158,24 @@ object TicketMachine {
         }
     }
 
-    private fun cancelPurchase(moneyInsert: Int) {
+    private fun cancelPurchase(money: LinkedList<Int>) {
         TUI.clear()
         TUI.write("Cancelled", 0, TUI.Location.CENTER)
+        var acc = 0
+        while(money.isNotEmpty()){
+            val i = money.poll()
+            acc += i
+        }
+        TUI.write("Returned $acc", 1, TUI.Location.CENTER)
         CoinAcceptor.ejectCoins()
-        TUI.write("Return $moneyInsert", 1, TUI.Location.CENTER)
-        Thread.sleep(2000)
         return
     }
 
-    private fun collectTicket(idx: Int, moneyInsert: Int, roundTrip: Boolean) {
+    private fun collectTicket(idx: Int, roundTrip: Boolean) {
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
         TUI.write("Collect Ticket", 1, TUI.Location.CENTER)
         Stations.ticketSold(Stations[idx])
-        Stations.update()
-        //CoinDeposit.depositCoin(moneyInsert)
-        //CoinDeposit.update()
-        TicketDispenser.print(0, idx, roundTrip)                         // ERRO !!!
+        TicketDispenser.print(0, idx, roundTrip)
         TUI.clear()
         TUI.write("Have a nice trip", 0, TUI.Location.LEFT)
         Thread.sleep(1000)
