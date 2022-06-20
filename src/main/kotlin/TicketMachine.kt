@@ -173,7 +173,7 @@ object TicketMachine {
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
         TUI.write("Collect Ticket", 1, TUI.Location.CENTER)
         Stations.ticketSold(Stations[idx])
-        TicketDispenser.print(0, idx, roundTrip)
+        TicketDispenser.print(idx, 0, roundTrip)
         TUI.clear()
         TUI.write("Have a nice trip", 0, TUI.Location.LEFT)
         Thread.sleep(1000)
