@@ -87,14 +87,13 @@ object TicketMachine {
             val key = TUI.read()
             when (key) {
                 NONE.toChar() -> return null
-                '*'           -> {
-                                    currentSelectionMode = SelectionMode.NUMBERS
-                                    return CHANGE_MODE
-                                 }
-                '#'           -> return idx
-                '2'           -> idx = (idx + 1).mod(Stations.size)
-                '8'           -> idx = (idx - 1).mod(Stations.size)
-                else          -> continue
+                '*' -> {
+                    currentSelectionMode = SelectionMode.NUMBERS
+                    return CHANGE_MODE
+                }
+                '#' -> return idx
+                '2' -> idx = (idx + 1).mod(Stations.size)
+                '8' -> idx = (idx - 1).mod(Stations.size)
             }
         }
     }
