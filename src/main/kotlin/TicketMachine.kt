@@ -151,20 +151,20 @@ object TicketMachine {
             } else {
                 TUI.clear()
                 TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-                TUI.write("$acc", 1, TUI.Location.CENTER)
+                TUI.write(acc.toEur(), 1, TUI.Location.CENTER)
             }
         }
     }
 
     private fun cancelPurchase(money: LinkedList<Int>) {
         TUI.clear()
-        TUI.write("Cancelled", 0, TUI.Location.CENTER)
+        TUI.write("Returning", 0, TUI.Location.CENTER)
         var acc = 0
         while(money.isNotEmpty()){
             val i = money.poll()
             acc += i
         }
-        TUI.write("Returned $acc", 1, TUI.Location.CENTER)
+        TUI.write(acc.toEur(), 1, TUI.Location.CENTER)
         CoinAcceptor.ejectCoins()
         return
     }
