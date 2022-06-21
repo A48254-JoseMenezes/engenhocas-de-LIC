@@ -15,6 +15,8 @@ object CoinDeposit {
         }
     }
 
+    operator fun get(idx : Int) = bank[idx]
+
     fun reset() {
         for (i in bank)
             i.amount = 0
