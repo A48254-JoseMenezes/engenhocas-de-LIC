@@ -1,12 +1,17 @@
 import java.util.LinkedList
+import kotlin.math.round
+import kotlin.system.exitProcess
 
 object TicketMachine {
 
     private const val NONE = 0
     private const val CHANGE_MODE = -1
-    private const val STATION_ID = 0
+    private const val STATION_ID = 6
+
+    private const val MAINTENANCE_OPTIONS = 5
 
     enum class SelectionMode {NUMBERS, ARROWS}
+    enum class Information {STATION_PRICE, STATION_TICKETS, COINS}
 
     var currentSelectionMode = SelectionMode.NUMBERS
     var maintenanceMode = false
@@ -41,6 +46,10 @@ object TicketMachine {
         TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
         TUI.write("'#' to begin", 1, TUI.Location.CENTER)
         while(true){
+            if (M.maintenanceCheck() || maintenanceMode == true){
+                maintenanceMode = true
+                return
+            }
             val key = TUI.read()
             if (key == '#') {
                 maintenanceMode = false
@@ -49,25 +58,27 @@ object TicketMachine {
         }
     }
 
-    fun select(): Int? {
+    fun select(info: Information): Int? {
             while (true)
                 when (currentSelectionMode) {
                     SelectionMode.NUMBERS -> {
-                                                val idx = selectNumbers() ?: return null
+                                                val idx = selectNumbers(info) ?: return null
                                                 if (idx == CHANGE_MODE) continue else return idx
                                              }
                     SelectionMode.ARROWS ->  {
-                                                val idx = selectArrows() ?: return null
+                                                val idx = selectArrows(info) ?: return null
                                                 if (idx == CHANGE_MODE) continue else return idx
                                              }
                 }
     }
 
-    private fun selectNumbers(): Int? {
+    private fun selectNumbers(info: Information): Int? {
+        val infoSize = if(info == Information.COINS) CoinDeposit.size else Stations.size
         var idx = 0
         while (true) {
-            if (idx < Stations.size)
-                writeStation(idx)
+            if (idx < infoSize)
+                if (info == Information.COINS) writeCoins(idx) else writeStation(idx, info)
+
             val key = TUI.read()
             when (key) {
                 NONE.toChar() -> return null
@@ -75,16 +86,23 @@ object TicketMachine {
                                     currentSelectionMode = SelectionMode.ARROWS
                                     return CHANGE_MODE
                                  }
-                '#'           -> return idx
-                else          -> idx = key.digitToInt()
+                '#'           -> return if (idx != STATION_ID) idx else continue
+                else          -> {
+                                    val newIdx = idx * 10 + key.digitToInt()
+                                    if(idx < 10 && newIdx < Stations.size)
+                                        idx = idx*10 + key.digitToInt()
+                                    else
+                                        idx = key.digitToInt()
+                                 }
             }
         }
     }
 
-    private fun selectArrows(): Int? {
+    private fun selectArrows(info: Information): Int? {
+        val infoSize = if(info == Information.COINS) CoinDeposit.size else Stations.size
         var idx = 0
         while (true) {
-            writeStation(idx)
+            if (info == Information.COINS) writeCoins(idx) else writeStation(idx, info)
             val key = TUI.read()
             when (key) {
                 NONE.toChar() -> return null
@@ -93,18 +111,13 @@ object TicketMachine {
                     return CHANGE_MODE
                 }
                 '#' -> return idx
-                '2' -> idx = (idx + 1).mod(Stations.size)
-                '8' -> idx = (idx - 1).mod(Stations.size)
+                '2' -> idx = (idx + 1).mod(infoSize)
+                '8' -> idx = (idx - 1).mod(infoSize)
             }
         }
     }
 
-    private fun writeStation(idx: Int) {
-        TUI.clear()
-        TUI.write(idx.toString(), 1, TUI.Location.LEFT)
-        TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-        TUI.write(Stations[idx].price.toEur(), 1, TUI.Location.RIGHT)
-    }
+
 
     fun startPurchase(idx: Int) {
         var roundTrip = false
@@ -112,9 +125,7 @@ object TicketMachine {
         var acc = amount
         val money = LinkedList<Int>()
 
-        TUI.clear()
-        TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-        TUI.write(amount.toEur(), 1, TUI.Location.CENTER)
+        writePurchase(idx, roundTrip, acc)
 
         while (true) {
             val key = TUI.read()
@@ -125,10 +136,10 @@ object TicketMachine {
                 }
                 '0' -> {
                     if (!roundTrip) {
-                        acc *= 2
+                        acc += amount
                         roundTrip = true
                     } else {
-                        acc /= 2
+                        acc -= amount
                         roundTrip = false
                     }
                 }
@@ -150,22 +161,22 @@ object TicketMachine {
                 collectTicket(idx, roundTrip)
                 return
             } else {
-                TUI.clear()
-                TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
-                TUI.write(acc.toEur(), 1, TUI.Location.CENTER)
+                writePurchase(idx, roundTrip, acc)
             }
         }
     }
 
     private fun cancelPurchase(money: LinkedList<Int>) {
         TUI.clear()
-        TUI.write("Returning", 0, TUI.Location.CENTER)
+        TUI.write("Canceled", 0, TUI.Location.CENTER)
         var acc = 0
         while(money.isNotEmpty()){
             val i = money.poll()
             acc += i
         }
-        TUI.write(acc.toEur(), 1, TUI.Location.CENTER)
+        if(acc != 0){
+            TUI.write(acc.toEur(), 1, TUI.Location.CENTER)
+        }
         CoinAcceptor.ejectCoins()
         return
     }
@@ -180,7 +191,137 @@ object TicketMachine {
         Thread.sleep(1000)
         return
     }
-}
+
+    fun maintenanceSelect() {
+        var idx = 0
+        while(true){
+            maintenanceSelectWrite(idx)
+            val key = TUI.read()
+            if (!M.maintenanceCheck()){
+                maintenanceMode = false
+                return
+            }
+            when(key) {
+                NONE.toChar() -> if (idx + 1 >= MAINTENANCE_OPTIONS) idx = 0 else idx++
+                '1' -> {
+                    val idx = select(Information.STATION_PRICE) ?: return
+                    testPurchase(idx)
+                    return
+                }
+
+                '2' -> select(Information.STATION_TICKETS)
+                '3' -> select(Information.COINS)
+                '4' -> reset()
+                '5' -> shutdown()
+
+            }
+        }
+    }
+
+    fun testPurchase(idx: Int){
+        var roundTrip = false
+        writePurchase(idx, roundTrip)
+        while(true){
+            val key = TUI.read()
+            when(key){
+                '0' -> roundTrip = !roundTrip
+                '#' -> return
+                '*' -> {
+                    collectTicket(idx, roundTrip)
+                    writePurchase(idx, roundTrip)
+                    return
+                }
+            }
+        }
+    }
+
+    fun reset(){
+        if(areYouSure()){
+            TUI.clear()
+            TUI.write("Resetting...", 0, TUI.Location.CENTER)
+            Stations.reset()
+            CoinDeposit.reset()
+            TUI.clear()
+            TUI.write("Reset success!", 0, TUI.Location.CENTER)
+            Thread.sleep(2000)
+        }
+    }
+
+    fun shutdown(){
+        if(areYouSure()){
+            TUI.clear()
+            TUI.write("Shutting down...", 0, TUI.Location.CENTER)
+            Stations.update()
+            CoinDeposit.update()
+            TUI.clear()
+            Thread.sleep(500)
+            exitProcess(0)
+        }
+    }
+
+    fun areYouSure(): Boolean{
+        TUI.clear()
+        TUI.write("Are you sure?", 0, TUI.Location.CENTER)
+        TUI.write("5 - Y, Other - N", 1, TUI.Location.CENTER)
+        while(true){
+            val key = TUI.read()
+            when(key) {
+                '5' -> return true
+                else -> return false
+            }
+        }
+    }
+
+    private fun writeStation(idx: Int, info: Information) {
+        TUI.clear()
+        val writeIdx = if(idx < 10) "0$idx:" else "$idx:"
+        TUI.write(writeIdx, 1, TUI.Location.LEFT)
+        TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
+        if(info == Information.STATION_TICKETS) {
+            TUI.write(Stations[idx].ticketsSold.toString(), 1, TUI.Location.RIGHT)
+        }
+        else{
+            TUI.write(Stations[idx].price.toEur(), 1, TUI.Location.RIGHT)
+        }
+    }
+
+    private fun writePurchase(idx: Int, roundTrip: Boolean, price: Int = 0){
+        TUI.clear()
+        TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
+        if(price == 0){
+            TUI.write("'*' - Print.", 1, TUI.Location.RIGHT)
+        }
+        else{
+            TUI.write(price.toEur(), 1, TUI.Location.CENTER)
+        }
+        if(roundTrip)
+            TUI.write("RT.", 1, TUI.Location.LEFT)
+        else{
+            TUI.write("OW.", 1, TUI.Location.LEFT)
+        }
+    }
+
+    private fun writeCoins(idx: Int){
+        TUI.clear()
+        val writeIdx = if(idx < 10) "0$idx:" else "$idx:"
+        TUI.write(writeIdx, 1, TUI.Location.LEFT)
+        TUI.write(CoinDeposit[idx].value.toEur(), 0, TUI.Location.CENTER)
+        TUI.write(CoinDeposit[idx].amount.toString(), 1, TUI.Location.RIGHT)
+    }
+
+    private fun maintenanceSelectWrite(idx: Int){
+        TUI.clear()
+        TUI.write("Maintenance", 0, TUI.Location.CENTER)
+        val text = when(idx){
+            0 -> "1 - Test"
+            1 -> "2 - Tickets Chk."
+            2 -> "3 - Coins Chk."
+            3 -> "4 - Reset Cnt."
+            4 -> "5 - Shutdown"
+            else -> "E: IDX INVALID."
+        }
+        TUI.write(text, 1, TUI.Location.CENTER)
+    }
 
     private fun Int.toEur() :String {
         val eur = "${this/100}"
@@ -188,18 +329,22 @@ object TicketMachine {
         return "$eur.$cent EUR"
     }
 
+}
+
+
+
 fun main(){
     TicketMachine.init()
     TicketMachine.bootUp()
     while(true) {
         TicketMachine.standby()
         if (TicketMachine.maintenanceMode) {
-
+            TicketMachine.maintenanceSelect()
         }
         else {
-            val idx = TicketMachine.select() ?: continue
+            val idx = TicketMachine.select(TicketMachine.Information.STATION_PRICE) ?: continue
             TicketMachine.startPurchase(idx)
         }
-
     }
+
 }

@@ -7,12 +7,15 @@ object CoinDeposit {
 
     private const val FILE_NAME = "CoinDeposit.txt"
 
+    var size = 0
+
     fun init(){
         val coinArray = FileAccess.readFile(FILE_NAME)
         for (i in coinArray.indices){
             val details = coinArray[i].split(";")
             bank.add( Coin(details[0].toInt(), details[1].toInt()) )
         }
+        size = bank.size
     }
 
     operator fun get(idx : Int) = bank[idx]
