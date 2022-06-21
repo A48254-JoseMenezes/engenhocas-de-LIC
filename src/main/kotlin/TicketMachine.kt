@@ -4,6 +4,7 @@ object TicketMachine {
 
     private const val NONE = 0
     private const val CHANGE_MODE = -1
+    private const val STATION_ID = 0
 
     enum class SelectionMode {NUMBERS, ARROWS}
 
@@ -173,7 +174,7 @@ object TicketMachine {
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
         TUI.write("Collect Ticket", 1, TUI.Location.CENTER)
         Stations.ticketSold(Stations[idx])
-        TicketDispenser.print(idx, 0, roundTrip)
+        TicketDispenser.print(idx, STATION_ID, roundTrip)
         TUI.clear()
         TUI.write("Have a nice trip", 0, TUI.Location.LEFT)
         Thread.sleep(1000)
@@ -182,8 +183,9 @@ object TicketMachine {
 }
 
     private fun Int.toEur() :String {
-        val cent = this%100
-        return if (cent < 10) "${this/100}.0${cent} EUR" else "${this/100}.${cent} EUR"
+        val eur = "${this/100}"
+        val cent = if(this%100 < 10) "0${this%100}" else "${this%100}"
+        return "$eur.$cent EUR"
     }
 
 fun main(){
