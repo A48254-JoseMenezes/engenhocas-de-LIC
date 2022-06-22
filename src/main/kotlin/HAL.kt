@@ -13,7 +13,15 @@ object HAL {
     fun isBit(mask: Int) = ( UsbPort.read() and mask ) != 0
 
     // Retorna os valores dos bits representados por mask presentes no UsbPort
-    fun readBits(mask: Int) = UsbPort.read() and mask
+    fun readBits(mask: Int): Int {
+        var value = UsbPort.read() and mask
+        var auxMask = mask
+        while (auxMask % 2 == 0) {
+            auxMask = auxMask.shr(1)
+            value = value.shr(1)
+        }
+        return value
+    }
 
     // Escreve nos bits representados por mask o valor de value
     fun writeBits(mask: Int, value: Int) {

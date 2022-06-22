@@ -21,7 +21,7 @@ object TUI {
         LCD.write(text)
     }
 
-    fun read() = KBD.waitKey(TIMEOUT)
+    fun read(timeout: Long = TIMEOUT) = KBD.waitKey(timeout)
 
     fun readInteger() {
         val key = read()

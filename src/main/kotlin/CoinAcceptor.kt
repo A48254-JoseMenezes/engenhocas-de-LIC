@@ -18,7 +18,7 @@ object CoinAcceptor {
 
     // Retorna o valor facial da moeda introduzida
     fun getCoinValue(): Int {
-        val id =  HAL.readBits(CID_MASK).shr(2)     // Garante que o valor está na posição certa.
+        val id =  HAL.readBits(CID_MASK)     // Garante que o valor está na posição certa.
         val listCents = listOf(5, 10, 20, 50, 100, 200)
         return listCents[id]
     }

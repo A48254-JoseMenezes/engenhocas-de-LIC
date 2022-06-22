@@ -8,6 +8,9 @@ object TicketMachine {
     private const val STATION_ID = 6
     private const val MAINTENANCE_OPTIONS = 5
 
+    private const val NO_TIMEOUT = 500L
+    private const val SHORT_TIMEOUT = 1500L
+
     private var currentSelectionMode = SelectionMode.NUMBERS
 
     enum class SelectionMode {NUMBERS, ARROWS}
@@ -45,11 +48,11 @@ object TicketMachine {
         TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
         TUI.write("'#' to begin", 1, TUI.Location.CENTER)
         while (true) {
-            if (M.maintenanceCheck() || maintenanceMode){
+            if (M.maintenanceCheck() || maintenanceMode) {
                 maintenanceMode = true
                 return
             }
-            val key = TUI.read()
+            val key = TUI.read(NO_TIMEOUT)
             if (key == '#') {
                 maintenanceMode = false
                 return
@@ -109,7 +112,7 @@ object TicketMachine {
                                   currentSelectionMode = SelectionMode.NUMBERS
                                   return CHANGE_MODE
                                  }
-                '#'           -> return idx
+                '#'           -> return if (idx != STATION_ID) idx else continue
                 '2'           -> idx = (idx + 1).mod(infoSize)
                 '8'           -> idx = (idx - 1).mod(infoSize)
             }
@@ -125,7 +128,7 @@ object TicketMachine {
         writePurchase(idx, roundTrip, acc)
 
         while (true) {
-            val key = TUI.read()
+            val key = TUI.read(NO_TIMEOUT)
             when (key) {
                 '#'     -> {
                             cancelPurchase(money)
@@ -139,6 +142,7 @@ object TicketMachine {
                                 acc -= amount
                                 roundTrip = false
                              }
+                             writePurchase(idx, roundTrip, acc)
                            }
             }
 
@@ -147,6 +151,7 @@ object TicketMachine {
                 money.add(coin)
                 acc -= coin
                 CoinAcceptor.acceptCoin()
+                if (acc > 0) writePurchase(idx, roundTrip, acc)
             }
 
             if (acc <= 0) {
@@ -157,8 +162,6 @@ object TicketMachine {
                 CoinAcceptor.collectCoins()
                 collectTicket(idx, roundTrip)
                 return
-            } else {
-                writePurchase(idx, roundTrip, acc)
             }
         }
     }
@@ -197,7 +200,7 @@ object TicketMachine {
         var idx = 0
         while (true) {
             maintenanceSelectWrite(idx)
-            val key = TUI.read()
+            val key = TUI.read(SHORT_TIMEOUT)
             if (!M.maintenanceCheck()) {
                 maintenanceMode = false
                 return
@@ -223,9 +226,12 @@ object TicketMachine {
         var roundTrip = false
         writePurchase(idx, roundTrip)
         while (true) {
-            val key = TUI.read()
+            val key = TUI.read(NO_TIMEOUT)
             when (key) {
-                '0' -> roundTrip = !roundTrip
+                '0' -> {
+                        roundTrip = !roundTrip
+                        writePurchase(idx, roundTrip)
+                      }
                 '#' -> return
                 '*' -> {
                         collectTicket(idx, roundTrip)
