@@ -1,23 +1,38 @@
 import java.util.LinkedList
 import kotlin.system.exitProcess
 
+// Aplicação da máquina de venda de bilhetes
 object TicketMachine {
 
+    // Valor que, traduzido para char, representa ausência de caracter
     private const val NONE = 0
+
+    // Valor que representa a mudança do modo de seleção
     private const val CHANGE_MODE = -1
+
+    // Valor que representa a estação de origem na compra de bilhete
     private const val STATION_ID = 6
+
+    // Valor que representa o número de opções/menus em modo de manutenção
     private const val MAINTENANCE_OPTIONS = 5
 
+    // Tempos de timeout das teclas
     private const val NO_TIMEOUT = 500L
     private const val SHORT_TIMEOUT = 1500L
 
+    // Representa o modo atual de seleção
     private var currentSelectionMode = SelectionMode.NUMBERS
 
+    // Representa as opções de seleção de informação
     enum class SelectionMode {NUMBERS, ARROWS}
+
+    // Representa as opções de informação
     enum class Information {STATION_PRICE, STATION_TICKETS, COINS}
 
+    // Representa o modo atual de execução
     var maintenanceMode = false
 
+    // Inicia a classe
     fun init() {
         M.init()
         CoinAcceptor.init()
@@ -27,6 +42,7 @@ object TicketMachine {
         CoinDeposit.init()
     }
 
+    // Apresentação inicial da aplicação no LCD
     fun bootUp() {
         TUI.write("----", 0, TUI.Location.CENTER)
         Thread.sleep(500)
@@ -43,6 +59,7 @@ object TicketMachine {
         TUI.write("'#' to begin", 1, TUI.Location.CENTER)
     }
 
+    // Aguarda início da compra de um bilhete ou da mudança para modo de manutenção
     fun standby() {
         TUI.clear()
         TUI.write("TICKET MACHINE", 0, TUI.Location.CENTER)
@@ -60,6 +77,7 @@ object TicketMachine {
         }
     }
 
+    // Seleção o módulo de seleção de informação, números ou setas
     fun select(info: Information): Int? {
         while (true)
             when (currentSelectionMode) {
@@ -74,6 +92,7 @@ object TicketMachine {
             }
     }
 
+    // Modo de seleção por números
     private fun selectNumbers(info: Information): Int? {
         val infoSize = if (info == Information.COINS) CoinDeposit.size else Stations.size
         var idx = 0
@@ -100,6 +119,7 @@ object TicketMachine {
         }
     }
 
+    // Modo se seleção por setas
     private fun selectArrows(info: Information): Int? {
         val infoSize = if (info == Information.COINS) CoinDeposit.size else Stations.size
         var idx = 0
@@ -119,6 +139,7 @@ object TicketMachine {
         }
     }
 
+    // Compra de um bilhete
     fun startPurchase(idx: Int) {
         var roundTrip = false
         val amount = Stations[idx].price
@@ -166,6 +187,7 @@ object TicketMachine {
         }
     }
 
+    // Cancelamento de uma compra de bilhete
     private fun cancelPurchase(money: LinkedList<Int>) {
         TUI.clear()
         TUI.write("Canceled", 0, TUI.Location.CENTER)
@@ -182,6 +204,7 @@ object TicketMachine {
         return
     }
 
+    // Aguarda colheita do bilhete
     private fun collectTicket(idx: Int, roundTrip: Boolean) {
         TUI.clear()
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
@@ -196,6 +219,7 @@ object TicketMachine {
         return
     }
 
+    // Modo de manutenção selecionado
     fun maintenanceSelect() {
         var idx = 0
         while (true) {
@@ -222,6 +246,7 @@ object TicketMachine {
         }
     }
 
+    // Simulação de uma compra de bilhete em modo de manutenção (manutenção, opção 1)
     private fun testPurchase(idx: Int) {
         var roundTrip = false
         writePurchase(idx, roundTrip)
@@ -242,6 +267,7 @@ object TicketMachine {
         }
     }
 
+    // Reset do contador de estações (stations) e reset do contador de moedas (bank) (manutenção, opção 4)
     private fun reset(){
         if (areYouSure()) {
             TUI.clear()
@@ -254,6 +280,7 @@ object TicketMachine {
         }
     }
 
+    // Atualiza o ficheiro das estações e o ficheiro das moedas e termina a execução da aplicação (manutenção, opção 5)
     private fun shutdown() {
         if (areYouSure()) {
             TUI.clear()
@@ -266,6 +293,7 @@ object TicketMachine {
         }
     }
 
+    // Retorna true se for para avançar o processo em curso ou false no caso contário
     private fun areYouSure(): Boolean {
         TUI.clear()
         TUI.write("Are you sure?", 0, TUI.Location.CENTER)
@@ -279,6 +307,7 @@ object TicketMachine {
         }
     }
 
+    // Escreve as informações de uma estação no LCD
     private fun writeStation(idx: Int, info: Information) {
         TUI.clear()
         val writeIdx = if (idx < 10) "0$idx:" else "$idx:"
@@ -292,6 +321,7 @@ object TicketMachine {
         }
     }
 
+    // Escreve as informações da compra de um bilhete (normal ou simulado) no LCD
     private fun writePurchase(idx: Int, roundTrip: Boolean, price: Int = 0) {
         TUI.clear()
         TUI.write(Stations[idx].name, 0, TUI.Location.CENTER)
@@ -307,6 +337,7 @@ object TicketMachine {
         }
     }
 
+    // Escreve as informações das moedas no LCD
     private fun writeCoins(idx: Int) {
         TUI.clear()
         val writeIdx = if(idx < 10) "0$idx:" else "$idx:"
@@ -315,6 +346,7 @@ object TicketMachine {
         TUI.write(CoinDeposit[idx].amount.toString(), 1, TUI.Location.RIGHT)
     }
 
+    // Escreve as opções/menus do modo de manutenção
     private fun maintenanceSelectWrite(idx: Int) {
         TUI.clear()
         TUI.write("Maintenance", 0, TUI.Location.CENTER)
@@ -329,6 +361,7 @@ object TicketMachine {
         TUI.write(text, 1, TUI.Location.CENTER)
     }
 
+    // Converte o valor de uma moeda em cêntimos para euros para apresentar no LCD
     private fun Int.toEur(): String {
         val eur = "${this/100}"
         val cent = if(this%100 < 10) "0${this%100}" else "${this%100}"
