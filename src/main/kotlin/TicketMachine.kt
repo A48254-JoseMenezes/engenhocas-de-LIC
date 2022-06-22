@@ -88,7 +88,7 @@ object TicketMachine {
                                     currentSelectionMode = SelectionMode.ARROWS
                                     return CHANGE_MODE
                                  }
-                '#'           -> return if (idx != STATION_ID) idx else continue
+                '#'           -> return if (idx != STATION_ID || info == Information.COINS) idx else continue
                 else          -> {
                                     val newIdx = idx * 10 + key.digitToInt()
                                     if (idx < 10 && newIdx < Stations.size)
@@ -112,7 +112,7 @@ object TicketMachine {
                                   currentSelectionMode = SelectionMode.NUMBERS
                                   return CHANGE_MODE
                                  }
-                '#'           -> return if (idx != STATION_ID) idx else continue
+                '#'           -> return if (idx != STATION_ID || info == Information.COINS) idx else continue
                 '2'           -> idx = (idx + 1).mod(infoSize)
                 '8'           -> idx = (idx - 1).mod(infoSize)
             }
