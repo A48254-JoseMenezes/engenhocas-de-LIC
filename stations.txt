@@ -10,7 +10,7 @@
 150;0;Kyiv
 175;0;Athina
 200;0;Wien
-225;1;Warszawa
+225;0;Warszawa
 250;0;Kobenhavn
-275;1;Stockholm
+275;0;Stockholm
 300;0;Constantinople

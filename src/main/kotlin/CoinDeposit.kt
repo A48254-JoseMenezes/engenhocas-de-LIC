@@ -1,7 +1,7 @@
 
 object CoinDeposit {
 
-    class Coin(val value : Int, var amount : Int)
+    class Coin(val value: Int, var amount: Int)
 
     private val bank = mutableListOf<Coin>()
 
@@ -9,27 +9,31 @@ object CoinDeposit {
 
     var size = 0
 
-    fun init(){
+    fun init() {
         val coinArray = FileAccess.readFile(FILE_NAME)
-        for (i in coinArray.indices){
+        for (i in coinArray.indices) {
             val details = coinArray[i].split(";")
             bank.add( Coin(details[0].toInt(), details[1].toInt()) )
         }
         size = bank.size
     }
 
-    operator fun get(idx : Int) = bank[idx]
+    operator fun get(idx: Int) = bank[idx]
 
-    fun reset() {
+    fun resetBank() {
         for (i in bank)
             i.amount = 0
     }
 
-    fun depositCoin(value : Int) = bank.first{ it.value == value }.amount++
+    fun depositCoin(value: Int) = bank.first{ it.value == value }.amount++
 
     fun update() {
         val lines = bank.map{ "${it.value};${it.amount}" } as MutableList<String>
         FileAccess.writeFile(FILE_NAME, lines)
     }
+}
 
+fun main() {
+    CoinDeposit.init()
+    CoinDeposit.update()
 }

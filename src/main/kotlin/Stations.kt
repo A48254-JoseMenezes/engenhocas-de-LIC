@@ -5,11 +5,11 @@ object Stations {
 
     private var stations = mutableListOf<Station>()
 
-    var size = 0
-
     private const val FILE_NAME = "stations.txt"
 
-    fun init(){
+    var size = 0
+
+    fun init() {
         val stationsArray = FileAccess.readFile(FILE_NAME)
         for (i in stationsArray.indices) {
             val details = stationsArray[i].split(";")
@@ -18,21 +18,19 @@ object Stations {
         size = stations.size
     }
 
+    operator fun get(i: Int) = stations[i]
 
-    operator fun get(i : Int) = stations[i]
-
-    fun reset() {
+    fun resetStations() {
         for (i in stations)
             i.ticketsSold = 0
     }
 
-    fun ticketSold(station : Station) = station.ticketsSold++
+    fun ticketSold(station: Station) = station.ticketsSold++
 
     fun update() {
         val lines = stations.map {"${it.price};${it.ticketsSold};${it.name}"} as MutableList<String>
         FileAccess.writeFile(FILE_NAME, lines)
     }
-
 }
 
 fun main(){
