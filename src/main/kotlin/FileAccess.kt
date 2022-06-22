@@ -1,14 +1,16 @@
 import java.io.File
-import kotlin.concurrent.timer
 
+//Possibilita o armazenamento de informação para um ficheiro
 object FileAccess {
 
+    //Lê um ficheiro e retorna as linhas presentes
     fun readFile(fileName: String): MutableList<String> {
         val bufferOfLines = mutableListOf<String>()
         File(fileName).forEachLine{bufferOfLines.add(it)}
         return bufferOfLines
     }
 
+    //Escreve num fichiero o conteúdo de linhas presentes numa lista
     fun writeFile(fileName: String, lines: MutableList<String>) {
         val writer = File(fileName).printWriter()
         for (i in lines){

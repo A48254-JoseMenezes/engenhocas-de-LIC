@@ -1,17 +1,24 @@
+//Possibilita a junção das funcionalidades to LCD e do keyboard
 object TUI {
 
+    //Representa os locais onde pode ser escrito a informação
     enum class Location(val offset: Int) { LEFT(0), CENTER(8), RIGHT(16) }
 
+    //Tempo normal de timeout
     const val TIMEOUT = 5000L
+    //Valor que, traduzido para char, representa a ausência de caracter
     const val NONE = 0
 
+    //Inicia a classe
     fun init() {
         LCD.init()
         LCD.clear()
     }
 
+    //Limpa o ecrã LCD
     fun clear() = LCD.clear()
 
+    //Escreve no LCD, numa linha e num local passado como parâmetro
     fun write(text: String, line: Int, location: Location) {
         when (location) {
             Location.LEFT -> LCD.cursor(line, location.offset)
@@ -21,17 +28,10 @@ object TUI {
         LCD.write(text)
     }
 
+    //Lê a tecla do keyboard. Se ocorreu timeout, ele retorna ausência de tecla
     fun read(timeout: Long = TIMEOUT) = KBD.waitKey(timeout)
 
-    fun readInteger() {
-        val key = read()
-        when (key) {
-            '*' -> write("",0, Location.CENTER)
-            '#' -> LCD.clear()
-            else -> write(key.toString(), 0, Location.LEFT)
-        }
-    }
-
+    //Lê do keyboard uma tecla e escreve-a no LCD
     fun writeFromKeyboard() {
         val key = read()
         if (key == NONE.toChar()) print("ERROR: Timeout reached.")
